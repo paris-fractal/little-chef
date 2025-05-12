@@ -21,7 +21,8 @@ export default function RootLayout({
       <body className={inter.className}>
         <RecipeProvider>
           <div className="flex h-screen">
-            <div className="w-64 flex-shrink-0">
+            <div className="w-64 flex-shrink-0 border-r">
+              <h1 className="text-2xl font-bold p-4 border-b">Little Chef</h1>
               <RecipeListWrapper />
             </div>
             <main className="flex-1 overflow-auto">
