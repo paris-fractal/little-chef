@@ -84,7 +84,35 @@ export default function Home() {
             <ol className="list-decimal pl-6 space-y-4">
               {recipe.instructions.map((instruction, index) => (
                 <li key={index} className="pl-2">
-                  {instruction.description}
+                  <div className="mb-2">{instruction.description}</div>
+                  {instruction.timer && (
+                    <div className="text-sm text-gray-600 mb-1">
+                      ⏱️ Cook for {instruction.timer} minutes
+                    </div>
+                  )}
+                  {instruction.relatedIngredientNames.length > 0 && (
+                    <div className="text-sm text-gray-600">
+                      🥄 Using:{" "}
+                      {instruction.relatedIngredientNames.map((ingredientName, i) => {
+                        const ingredient = recipe.ingredients.find(
+                          (ing) => ing.name.toLowerCase() === ingredientName.toLowerCase()
+                        );
+                        return (
+                          <span key={i} className="group relative inline-block">
+                            <span className="cursor-help text-blue-600 hover:text-blue-800">
+                              {ingredientName}
+                            </span>
+                            {ingredient && (
+                              <span className="invisible group-hover:visible absolute z-10 bg-gray-900 text-white text-xs rounded py-1 px-2 -top-8 left-1/2 transform -translate-x-1/2 whitespace-nowrap">
+                                {ingredient.amount} {ingredient.unit}
+                              </span>
+                            )}
+                            {i < instruction.relatedIngredientNames.length - 1 ? ", " : ""}
+                          </span>
+                        );
+                      })}
+                    </div>
+                  )}
                 </li>
               ))}
             </ol>

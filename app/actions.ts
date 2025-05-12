@@ -11,11 +11,11 @@ export async function handleRecipeRequest(text: string): Promise<{ success: bool
         const id = uuidv4()
 
         // Save to database
-        await createRecipe({
+        /*await createRecipe({
             id,
             name: recipe.name,
             data: recipe
-        })
+        })*/
 
         return { success: true, recipe }
     } catch (error) {

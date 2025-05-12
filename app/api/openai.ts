@@ -18,6 +18,8 @@ interface ParsedIngredient {
 
 interface ParsedInstruction {
     description: string;
+    timer?: number;
+    relatedIngredientNames: string[];
 }
 
 export interface EnhancedInstruction {
@@ -47,9 +49,14 @@ const recipeSchema = {
             items: {
                 type: "object",
                 properties: {
-                    description: { type: "string" }
+                    description: { type: "string" },
+                    timer: { type: "number", nullable: true },
+                    relatedIngredientNames: {
+                        type: "array",
+                        items: { type: "string" }
+                    }
                 },
-                required: ["description"]
+                required: ["description", "relatedIngredientNames"]
             }
         }
     },
@@ -58,7 +65,7 @@ const recipeSchema = {
 
 export async function parseRecipe(rawRecipeText: string): Promise<ParsedRecipe> {
     const response = await openai.chat.completions.create({
-        model: "gpt-4-turbo",
+        model: "gpt-4.1",
         messages: [
             {
                 role: "system",
@@ -81,11 +88,11 @@ export async function parseRecipe(rawRecipeText: string): Promise<ParsedRecipe> 
 
 export async function generateRecipe(rawText: string): Promise<ParsedRecipe> {
     const response = await openai.chat.completions.create({
-        model: "gpt-4-turbo",
+        model: "gpt-4.1",
         messages: [
             {
                 role: "system",
-                content: "You are a professional chef. Create a detailed recipe based on the user's request. Include precise measurements and clear instructions."
+                content: "You are a professional chef. Create a detailed recipe based on the user's request. Include precise measurements and clear instructions. For each instruction step, identify any cooking times (in minutes) and which ingredients from the ingredients list are being used in that step."
             },
             { role: "user", content: rawText }
         ],
@@ -104,7 +111,7 @@ export async function generateRecipe(rawText: string): Promise<ParsedRecipe> {
 
 export async function enhanceRecipe(parsedRecipe: ParsedRecipe): Promise<EnhancedInstruction[]> {
     const response = await openai.chat.completions.create({
-        model: "gpt-4-turbo",
+        model: "gpt-4.1",
         messages: [
             {
                 role: "system",
