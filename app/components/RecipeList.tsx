@@ -1,23 +1,17 @@
 'use client';
 
 import { useState } from 'react';
-import type { ParsedRecipe } from '../api/openai';
+import type { Recipe } from '../schema';
 import { useRecipe } from '../context/RecipeContext';
 
-interface SavedRecipe {
-    id: string;
-    name: string;
-    data: ParsedRecipe;
-}
-
 interface RecipeListProps {
-    initialRecipes: SavedRecipe[];
-    onSelectRecipe: (recipe: ParsedRecipe) => void;
+    initialRecipes: Recipe[];
+    onSelectRecipe: (recipe: Recipe) => void;
     selectedRecipeId: string | null;
 }
 
 export default function RecipeList({ initialRecipes, onSelectRecipe, selectedRecipeId }: RecipeListProps) {
-    const [recipes] = useState<SavedRecipe[]>(initialRecipes);
+    const [recipes] = useState<Recipe[]>(initialRecipes);
     const { setSelectedRecipe } = useRecipe();
 
     const handleNewRecipe = () => {
@@ -45,7 +39,7 @@ export default function RecipeList({ initialRecipes, onSelectRecipe, selectedRec
                     {recipes.map((recipe) => (
                         <li key={recipe.id}>
                             <button
-                                onClick={() => onSelectRecipe(recipe.data)}
+                                onClick={() => onSelectRecipe(recipe)}
                                 className={`w-full text-left px-3 py-2 rounded hover:bg-gray-100 transition-colors ${selectedRecipeId === recipe.id ? 'bg-gray-100' : ''}`}
                             >
                                 {recipe.name}

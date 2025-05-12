@@ -1,17 +1,17 @@
 'use client';
 
 import { createContext, useContext, useState, ReactNode } from 'react';
-import type { ParsedRecipe } from '../api/openai';
+import type { Recipe } from '../schema';
 
 interface RecipeContextType {
-    selectedRecipe: ParsedRecipe | null;
-    setSelectedRecipe: (recipe: ParsedRecipe | null) => void;
+    selectedRecipe: Recipe | null;
+    setSelectedRecipe: (recipe: Recipe | null) => void;
 }
 
 const RecipeContext = createContext<RecipeContextType | undefined>(undefined);
 
 export function RecipeProvider({ children }: { children: ReactNode }) {
-    const [selectedRecipe, setSelectedRecipe] = useState<ParsedRecipe | null>(null);
+    const [selectedRecipe, setSelectedRecipe] = useState<Recipe | null>(null);
 
     return (
         <RecipeContext.Provider value={{ selectedRecipe, setSelectedRecipe }}>

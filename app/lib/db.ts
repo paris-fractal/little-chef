@@ -34,6 +34,11 @@ export async function listRecipes() {
     return recipes.map(toRecipe);
 }
 
+export async function deleteRecipe(id: string) {
+    const res = await sql`DELETE FROM recipes WHERE id = ${id}`;
+    return res;
+}
+
 function toRecipe(row: Row): Recipe {
     return {
         id: row.id,

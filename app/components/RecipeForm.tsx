@@ -1,14 +1,14 @@
 import { useState } from "react"
-import type { ParsedRecipe } from "../api/openai"
+import type { Recipe } from "../schema"
 import { handleRecipeRequest } from "../actions"
 import { RecipeDisplay } from "./RecipeDisplay"
 
 interface RecipeFormProps {
-    onRecipeGenerated: (recipe: ParsedRecipe) => void
+    onRecipeGenerated: (recipe: Recipe) => void
 }
 
 export function RecipeForm({ onRecipeGenerated }: RecipeFormProps) {
-    const [recipe, setRecipe] = useState<ParsedRecipe | null>(null)
+    const [recipe, setRecipe] = useState<Recipe | null>(null)
     const [loading, setLoading] = useState(false)
     const [error, setError] = useState<string | null>(null)
 
