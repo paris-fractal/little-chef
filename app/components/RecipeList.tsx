@@ -2,20 +2,19 @@
 
 import { useState } from 'react';
 import type { Recipe } from '../schema';
-import { useRecipe } from '../context/RecipeContext';
+import { useRouter } from 'next/navigation';
 
 interface RecipeListProps {
     initialRecipes: Recipe[];
-    onSelectRecipe: (recipe: Recipe) => void;
     selectedRecipeId: string | null;
 }
 
-export default function RecipeList({ initialRecipes, onSelectRecipe, selectedRecipeId }: RecipeListProps) {
+export default function RecipeList({ initialRecipes, selectedRecipeId }: RecipeListProps) {
     const [recipes] = useState<Recipe[]>(initialRecipes);
-    const { setSelectedRecipe } = useRecipe();
+    const router = useRouter();
 
     const handleNewRecipe = () => {
-        setSelectedRecipe(null);
+        router.push('/');
     };
 
     return (
@@ -39,7 +38,7 @@ export default function RecipeList({ initialRecipes, onSelectRecipe, selectedRec
                     {recipes.map((recipe) => (
                         <li key={recipe.id}>
                             <button
-                                onClick={() => onSelectRecipe(recipe)}
+                                onClick={() => router.push(`/recipe/${recipe.id}`)}
                                 className={`w-full text-left px-3 py-2 rounded hover:bg-gray-100 transition-colors ${selectedRecipeId === recipe.id ? 'bg-gray-100' : ''}`}
                             >
                                 {recipe.name}

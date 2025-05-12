@@ -1,25 +1,23 @@
-'use server';
+'use client';
 
+import { useEffect, useState } from 'react';
 import { listRecipes } from '../lib/db';
-import ClientRecipeList from './ClientRecipeList';
-import type { ParsedRecipe } from '../api/openai';
+import RecipeList from './RecipeList';
+import { usePathname } from 'next/navigation';
+import type { Recipe } from '../schema';
 
-interface SavedRecipe {
-    id: string;
-    name: string;
-    data: ParsedRecipe;
-}
+export default function RecipeListWrapper() {
+    const [recipes, setRecipes] = useState<Recipe[]>([]);
+    const pathname = usePathname();
+    const selectedRecipeId = pathname.startsWith('/recipe/') ? pathname.split('/')[2] : null;
 
-export default async function RecipeListWrapper() {
-    const recipes = await listRecipes();
-    const initialRecipes: SavedRecipe[] = recipes.map(recipe => ({
-        id: recipe.id,
-        name: recipe.name,
-        data: {
-            name: recipe.name,
-            ingredients: recipe.data.ingredients,
-            instructions: recipe.data.instructions
-        }
-    }));
-    return <ClientRecipeList initialRecipes={initialRecipes} />;
+    useEffect(() => {
+        const loadRecipes = async () => {
+            const loadedRecipes = await listRecipes();
+            setRecipes(loadedRecipes);
+        };
+        loadRecipes();
+    }, []);
+
+    return <RecipeList initialRecipes={recipes} selectedRecipeId={selectedRecipeId} />;
 } 

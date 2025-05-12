@@ -1,16 +1,12 @@
 import { useState } from "react"
 import type { Recipe } from "../schema"
 import { handleRecipeRequest } from "../actions"
-import { RecipeDisplay } from "./RecipeDisplay"
+import { useRouter } from "next/navigation"
 
-interface RecipeFormProps {
-    onRecipeGenerated: (recipe: Recipe) => void
-}
-
-export function RecipeForm({ onRecipeGenerated }: RecipeFormProps) {
-    const [recipe, setRecipe] = useState<Recipe | null>(null)
+export function RecipeForm() {
     const [loading, setLoading] = useState(false)
     const [error, setError] = useState<string | null>(null)
+    const router = useRouter()
 
     async function onSubmit(event: React.FormEvent<HTMLFormElement>) {
         event.preventDefault()
@@ -24,8 +20,7 @@ export function RecipeForm({ onRecipeGenerated }: RecipeFormProps) {
             const result = await handleRecipeRequest(text)
 
             if (result.success && result.recipe) {
-                setRecipe(result.recipe)
-                onRecipeGenerated(result.recipe)
+                router.push(`/recipe/${result.recipe.id}`)
             } else {
                 setError(result.error || 'An unexpected error occurred')
             }
@@ -39,8 +34,8 @@ export function RecipeForm({ onRecipeGenerated }: RecipeFormProps) {
     return (
         <>
             <form onSubmit={onSubmit} className="mb-8">
-                <div className="flex flex-col gap-4">
-                    <label htmlFor="recipe-request" className="text-lg">
+                <div className="space-y-4">
+                    <label htmlFor="recipe-request" className="block text-lg font-medium">
                         What would you like to cook?
                     </label>
                     <textarea
@@ -59,16 +54,9 @@ export function RecipeForm({ onRecipeGenerated }: RecipeFormProps) {
                     </button>
                 </div>
             </form>
-
             {error && (
                 <div className="p-4 bg-red-100 text-red-700 rounded-lg mb-8">
                     {error}
-                </div>
-            )}
-
-            {recipe && (
-                <div className="space-y-8">
-                    <RecipeDisplay recipe={recipe} />
                 </div>
             )}
         </>

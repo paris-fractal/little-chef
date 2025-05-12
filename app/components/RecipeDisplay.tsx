@@ -1,19 +1,21 @@
+'use client';
+
 import type { Recipe } from "../schema"
 import { handleDeleteRecipe } from "../actions"
-import { useRecipe } from "../context/RecipeContext"
+import { useRouter } from "next/navigation"
 
 interface RecipeDisplayProps {
     recipe: Recipe
 }
 
 export function RecipeDisplay({ recipe }: RecipeDisplayProps) {
-    const { setSelectedRecipe } = useRecipe();
+    const router = useRouter();
 
     const handleDelete = async () => {
         if (confirm('Are you sure you want to delete this recipe?')) {
             const result = await handleDeleteRecipe(recipe.id);
             if (result.success) {
-                setSelectedRecipe(null);
+                router.push('/');
             } else {
                 alert('Failed to delete recipe');
             }
