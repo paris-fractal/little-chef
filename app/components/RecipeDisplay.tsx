@@ -15,6 +15,7 @@ export function RecipeDisplay({ recipe }: RecipeDisplayProps) {
     const handleDelete = async () => {
         if (confirm('Are you sure you want to delete this recipe?')) {
             const result = await handleDeleteRecipe(recipe.id);
+            console.log('resultis', result);
             if (result.success) {
                 router.push('/');
             } else {
