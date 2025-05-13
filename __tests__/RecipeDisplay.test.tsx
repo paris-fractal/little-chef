@@ -1,10 +1,11 @@
 import React from 'react';
 import { render, screen, fireEvent, act } from '@testing-library/react';
 import '@testing-library/jest-dom';
-import { RecipeDisplay } from '../../../app/components/RecipeDisplay';
+import { RecipeDisplay } from '../app/components/RecipeDisplay';
 import { useRouter } from 'next/navigation';
-import { handleDeleteRecipe } from '../../../app/actions';
-import type { Recipe } from '../../../app/schema';
+import { handleDeleteRecipe } from '../app/actions';
+import type { Recipe } from '../app/schema';
+
 
 // Mock the next/navigation module
 jest.mock('next/navigation', () => ({
