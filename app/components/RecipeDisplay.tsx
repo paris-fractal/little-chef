@@ -3,6 +3,7 @@
 import type { Recipe } from "../schema"
 import { handleDeleteRecipe } from "../actions"
 import { useRouter } from "next/navigation"
+import { Timer } from "./Timer"
 
 interface RecipeDisplayProps {
     recipe: Recipe
@@ -54,9 +55,10 @@ export function RecipeDisplay({ recipe }: RecipeDisplayProps) {
                         <li key={index} className="pl-2">
                             <div className="mb-2 text-[#4a5568]">{instruction.description}</div>
                             {instruction.timer && (
-                                <div className="text-sm text-[#718096] mb-1 bg-[#f5efe9] inline-block px-3 py-1 rounded-full">
-                                    ⏱️ Cook for {instruction.timer} minutes
-                                </div>
+                                <Timer
+                                    minutes={instruction.timer}
+                                    instructionIndex={index}
+                                />
                             )}
                             {instruction.relatedIngredientNames.length > 0 && (
                                 <div className="text-sm text-[#718096] mt-2">

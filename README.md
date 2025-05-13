@@ -7,3 +7,9 @@ Little Chef is an AI assistant in a Next.js webapp designed to help you track, m
  - Mentions of ingredients or timers in the recipe instructions have mouse-over tooltips
  - An AI assistant who can help you edit or make the recipe
  
+
+ TODO:
+ - Authorization / Users
+ - Editing Recipes
+ - Chat with AI
+ - Tests
