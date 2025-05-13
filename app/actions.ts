@@ -5,6 +5,7 @@ import { v4 as uuidv4 } from 'uuid'
 import type { ParsedRecipe } from './api/openai'
 import type { Recipe } from './schema'
 import { createRecipe, deleteRecipe } from './lib/db';
+import { revalidatePath } from 'next/cache';
 
 export async function handleRecipeRequest(text: string): Promise<{ success: boolean; recipe?: Recipe; error?: string }> {
     try {
@@ -23,6 +24,8 @@ export async function handleRecipeRequest(text: string): Promise<{ success: bool
         // Save to database
         await createRecipe(recipe)
 
+        revalidatePath("/")
+
         return { success: true, recipe }
     } catch (error) {
         console.error('Error generating recipe:', error)
@@ -33,6 +36,8 @@ export async function handleRecipeRequest(text: string): Promise<{ success: bool
 export async function handleDeleteRecipe(id: string): Promise<{ success: boolean; error?: string }> {
     try {
         await deleteRecipe(id);
+
+        revalidatePath("/")
         return { success: true };
     } catch (error) {
         console.error('Error deleting recipe:', error);

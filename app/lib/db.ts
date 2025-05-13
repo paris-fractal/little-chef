@@ -19,6 +19,9 @@ export async function setupDatabase() {
 
 export async function getRecipe(id: string) {
     const recipe = await sql`SELECT * FROM recipes WHERE id = ${id}`;
+    if (recipe.length === 0) {
+        return null;
+    }
     return toRecipe(recipe[0]);
 }
 

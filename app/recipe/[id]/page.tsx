@@ -9,7 +9,8 @@ interface Props {
 }
 
 export default async function RecipePage({ params }: Props) {
-    const recipe = await getRecipe(params.id);
+    const awaited = await params;
+    const recipe = await getRecipe(awaited.id);
 
     if (!recipe) {
         notFound();

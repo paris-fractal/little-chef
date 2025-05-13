@@ -2,16 +2,16 @@
 
 import { useState } from 'react';
 import type { Recipe } from '../schema';
-import { useRouter } from 'next/navigation';
+import { useRouter, usePathname } from 'next/navigation';
 
 interface RecipeListProps {
-    initialRecipes: Recipe[];
-    selectedRecipeId: string | null;
+    recipes: Recipe[];
 }
 
-export default function RecipeList({ initialRecipes, selectedRecipeId }: RecipeListProps) {
-    const [recipes] = useState<Recipe[]>(initialRecipes);
+export default function RecipeList({ recipes }: RecipeListProps) {
     const router = useRouter();
+    const pathname = usePathname();
+    const selectedRecipeId = pathname.startsWith('/recipe/') ? pathname.split('/')[2] : null;
 
     const handleNewRecipe = () => {
         router.push('/');
@@ -39,7 +39,10 @@ export default function RecipeList({ initialRecipes, selectedRecipeId }: RecipeL
                         <li key={recipe.id}>
                             <button
                                 onClick={() => router.push(`/recipe/${recipe.id}`)}
-                                className={`w-full text-left px-3 py-2 rounded hover:bg-gray-100 transition-colors ${selectedRecipeId === recipe.id ? 'bg-gray-100' : ''}`}
+                                className={`w-full text-left px-3 py-2 rounded hover:bg-gray-100 transition-colors ${selectedRecipeId === recipe.id
+                                    ? 'bg-gray-100 border-l-4 border-blue-500 font-medium'
+                                    : ''
+                                    }`}
                             >
                                 {recipe.name}
                             </button>
