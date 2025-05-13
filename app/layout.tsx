@@ -1,9 +1,9 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
+import { Playfair_Display } from "next/font/google";
 import "./globals.css";
 import RecipeListWrapper from "./components/RecipeListWrapper";
 
-const inter = Inter({ subsets: ["latin"] });
+const playfair = Playfair_Display({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
   title: "Little Chef",
@@ -17,10 +17,10 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={inter.className}>
+      <body className={`${playfair.className} bg-[#faf6f1] text-[#2c3e50]`}>
         <div className="flex h-screen">
-          <div className="w-64 flex-shrink-0 border-r">
-            <h1 className="text-2xl font-bold p-4 border-b">Little Chef</h1>
+          <div className="w-64 flex-shrink-0 border-r border-[#e8d5c4] bg-[#f5efe9]">
+            <h1 className="text-2xl font-bold p-4 border-b border-[#e8d5c4]">Little Chef</h1>
             <RecipeListWrapper />
           </div>
           <main className="flex-1 overflow-auto">

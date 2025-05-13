@@ -41,21 +41,21 @@ export function RecipeForm() {
                     <textarea
                         id="recipe-request"
                         name="recipe-request"
-                        className="w-full p-4 border rounded-lg min-h-[100px]"
+                        className="w-full p-4 border border-[#e8d5c4] rounded-lg min-h-[100px] bg-white focus:ring-2 focus:ring-[#a8c4d9] focus:border-transparent"
                         placeholder="Describe what you'd like to cook..."
                         required
                     />
                     <button
                         type="submit"
                         disabled={loading}
-                        className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50"
+                        className="px-6 py-3 bg-[#a8c4d9] text-[#2c3e50] rounded-lg hover:bg-[#8ab3d0] disabled:opacity-50 transition-colors font-medium"
                     >
                         {loading ? "Generating..." : "Generate Recipe"}
                     </button>
                 </div>
             </form>
             {error && (
-                <div className="p-4 bg-red-100 text-red-700 rounded-lg mb-8">
+                <div className="p-4 bg-red-50 text-red-700 rounded-lg mb-8 border border-red-200">
                     {error}
                 </div>
             )}
