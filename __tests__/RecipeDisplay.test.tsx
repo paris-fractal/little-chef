@@ -13,12 +13,12 @@ jest.mock('next/navigation', () => ({
 }));
 
 // Mock the actions module
-jest.mock('../../../app/actions', () => ({
+jest.mock('../app/actions', () => ({
     handleDeleteRecipe: jest.fn(),
 }));
 
 // Mock the Timer component
-jest.mock('../../../app/components/Timer', () => ({
+jest.mock('../app/components/Timer', () => ({
     Timer: () => <div data-testid="mock-timer">Timer Component</div>,
 }));
 
