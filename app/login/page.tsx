@@ -1,6 +1,10 @@
 import { signIn } from "@/app/auth"
 
-export default function LoginPage() {
+export default function LoginPage({
+    searchParams,
+}: {
+    searchParams: { callbackUrl?: string }
+}) {
     return (
         <div className="flex min-h-screen flex-col items-center justify-center py-2">
             <div className="w-full max-w-md space-y-8">
@@ -14,7 +18,7 @@ export default function LoginPage() {
                     await signIn("credentials", {
                         email: formData.get("email"),
                         password: formData.get("password"),
-                        redirectTo: "/dashboard"
+                        redirectTo: searchParams.callbackUrl || "/dashboard"
                     })
                 }}>
                     <div className="space-y-4">
