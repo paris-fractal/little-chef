@@ -1,52 +1,59 @@
 'use server';
 
-import postgres, { RowList, Row } from 'postgres';
-import { Recipe } from '../schema';
+import { drizzle } from 'drizzle-orm/postgres-js';
+import postgres from 'postgres';
+import { eq, and } from 'drizzle-orm';
+import { recipes } from './schema';
+import type { Recipe as RecipeType } from '../schema';
 
-const sql = postgres(process.env.POSTGRES_URL!, { ssl: 'require' });
+const client = postgres(process.env.POSTGRES_URL!, { ssl: 'require' });
+const db = drizzle(client);
 
-export async function setupDatabase() {
-    await sql`
-    CREATE TABLE IF NOT EXISTS recipes (
-      id TEXT PRIMARY KEY,
-      name TEXT NOT NULL,
-      recipe_data TEXT NOT NULL,
-      created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
-      updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
-    )
-  `;
-}
+export async function getRecipe(id: string, userId: string) {
+    const result = await db
+        .select()
+        .from(recipes)
+        .where(and(eq(recipes.id, id), eq(recipes.userId, userId)))
+        .limit(1);
 
-export async function getRecipe(id: string) {
-    const recipe = await sql`SELECT * FROM recipes WHERE id = ${id}`;
-    if (recipe.length === 0) {
+    if (result.length === 0) {
         return null;
     }
-    return toRecipe(recipe[0]);
+
+    return toRecipe(result[0]);
 }
 
-
-export async function createRecipe(recipe: Recipe) {
-    const res = await sql`
-    INSERT INTO recipes (id, name, recipe_data) VALUES (${recipe.id}, ${recipe.name}, ${JSON.stringify(recipe.data)})`;
+export async function createRecipe(recipe: RecipeType, userId: string) {
+    const res = await db.insert(recipes).values({
+        id: recipe.id,
+        name: recipe.name,
+        recipeData: JSON.stringify(recipe.data),
+        userId: userId,
+    });
     return res;
 }
 
-export async function listRecipes() {
-    const recipes = await sql`SELECT * FROM recipes`;
-    return recipes.map(toRecipe);
+export async function listRecipes(userId: string) {
+    const result = await db
+        .select()
+        .from(recipes)
+        .where(eq(recipes.userId, userId));
+
+    return result.map(toRecipe);
 }
 
-export async function deleteRecipe(id: string) {
-    const res = await sql`DELETE FROM recipes WHERE id = ${id}`;
+export async function deleteRecipe(id: string, userId: string) {
+    const res = await db
+        .delete(recipes)
+        .where(and(eq(recipes.id, id), eq(recipes.userId, userId)));
     return res;
 }
 
-function toRecipe(row: Row): Recipe {
+function toRecipe(row: typeof recipes.$inferSelect): RecipeType {
     return {
         id: row.id,
         name: row.name,
-        data: JSON.parse(row.recipe_data)
-    }
+        data: JSON.parse(row.recipeData)
+    };
 }
 

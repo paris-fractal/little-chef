@@ -18,7 +18,7 @@ export default function LoginPage({
                     await signIn("credentials", {
                         email: formData.get("email"),
                         password: formData.get("password"),
-                        redirectTo: searchParams.callbackUrl || "/dashboard"
+                        redirectTo: searchParams.callbackUrl || "/"
                     })
                 }}>
                     <div className="space-y-4">

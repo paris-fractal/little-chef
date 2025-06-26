@@ -1,6 +1,7 @@
 import { RecipeDisplay } from "../../components/RecipeDisplay";
 import { getRecipe } from "../../lib/db";
 import { notFound } from "next/navigation";
+import { auth } from "../../auth";
 
 interface Props {
     params: {
@@ -9,8 +10,12 @@ interface Props {
 }
 
 export default async function RecipePage({ params }: Props) {
-    const awaited = await params;
-    const recipe = await getRecipe(awaited.id);
+    const session = await auth();
+    if (!session?.user?.id) {
+        return <div>Please sign in to view recipes</div>;
+    }
+
+    const recipe = await getRecipe(params.id, session.user.id);
 
     if (!recipe) {
         notFound();

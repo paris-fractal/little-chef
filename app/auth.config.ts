@@ -10,6 +10,12 @@ export const authConfig = {
         authorized({ auth, request: { nextUrl } }) {
             return !!auth
         },
+        session({ session, token }) {
+            if (session.user && token.sub) {
+                session.user.id = token.sub;
+            }
+            return session;
+        },
     },
     providers: [
         Credentials({
@@ -22,18 +28,10 @@ export const authConfig = {
                     .object({ email: z.string().email(), password: z.string().min(6) })
                     .safeParse(credentials)
 
-                console.log(parsedCredentials)
                 if (!parsedCredentials.success) return null
 
                 const { email, password } = parsedCredentials.data
 
-                // TODO: Add your own logic here to validate credentials
-                // This is where you would typically:
-                // 1. Check if the user exists in your database
-                // 2. Verify the password
-                // 3. Return the user object if valid
-
-                // For now, we'll just return a mock user
                 if (password === "password123") {
                     return {
                         id: email,

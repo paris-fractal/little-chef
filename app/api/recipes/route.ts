@@ -1,13 +1,22 @@
 import { NextResponse } from 'next/server';
 import { listRecipes, createRecipe } from '../../lib/db';
 import { v4 as uuidv4 } from 'uuid';
+import { auth } from '../../auth';
 
 // Keep track of active SSE connections
 const clients = new Set<ReadableStreamDefaultController>();
 
 export async function GET() {
     try {
-        const recipes = await listRecipes();
+        const session = await auth();
+        if (!session?.user?.id) {
+            return NextResponse.json(
+                { error: 'Not authenticated' },
+                { status: 401 }
+            );
+        }
+
+        const recipes = await listRecipes(session.user.id);
         return NextResponse.json(recipes);
     } catch (error) {
         console.error('Error fetching recipes:', error);
@@ -20,6 +29,14 @@ export async function GET() {
 
 export async function POST(request: Request) {
     try {
+        const session = await auth();
+        if (!session?.user?.id) {
+            return NextResponse.json(
+                { error: 'Not authenticated' },
+                { status: 401 }
+            );
+        }
+
         const recipe = await request.json();
         const id = uuidv4();
 
@@ -27,7 +44,7 @@ export async function POST(request: Request) {
             id,
             name: recipe.name,
             data: recipe
-        });
+        }, session.user.id);
 
         // Notify all connected clients about the new recipe
         clients.forEach(client => {

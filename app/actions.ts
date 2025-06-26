@@ -6,9 +6,16 @@ import type { ParsedRecipe } from './api/openai'
 import type { Recipe } from './schema'
 import { createRecipe, deleteRecipe } from './lib/db';
 import { revalidatePath } from 'next/cache';
+import { auth } from './auth';
+import { authConfig } from './auth.config';
 
 export async function handleRecipeRequest(text: string): Promise<{ success: boolean; recipe?: Recipe; error?: string }> {
     try {
+        const session = await auth();
+        if (!session?.user?.id) {
+            return { success: false, error: 'Not authenticated' };
+        }
+
         const parsedRecipe = await generateRecipe(text)
         const id = uuidv4()
 
@@ -21,8 +28,8 @@ export async function handleRecipeRequest(text: string): Promise<{ success: bool
             }
         }
 
-        // Save to database
-        await createRecipe(recipe)
+        // Save to database with user ID
+        await createRecipe(recipe, session.user.id)
 
         revalidatePath("/")
 
@@ -35,7 +42,12 @@ export async function handleRecipeRequest(text: string): Promise<{ success: bool
 
 export async function handleDeleteRecipe(id: string): Promise<{ success: boolean; error?: string }> {
     try {
-        await deleteRecipe(id);
+        const session = await auth();
+        if (!session?.user?.id) {
+            return { success: false, error: 'Not authenticated' };
+        }
+
+        await deleteRecipe(id, session.user.id);
 
         revalidatePath("/")
         return { success: true };
