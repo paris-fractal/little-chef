@@ -1,5 +1,5 @@
-'use server';
 
+//import 'server-only';
 import { drizzle } from 'drizzle-orm/postgres-js';
 import postgres from 'postgres';
 import { eq, and } from 'drizzle-orm';
@@ -7,7 +7,7 @@ import { recipes } from './schema';
 import type { Recipe as RecipeType } from '../schema';
 
 const client = postgres(process.env.POSTGRES_URL!, { ssl: 'require' });
-const db = drizzle(client);
+export const db = drizzle(client);
 
 export async function getRecipe(id: string, userId: string) {
     const result = await db

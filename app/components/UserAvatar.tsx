@@ -1,8 +1,8 @@
 'use client';
 
 import { useState, useRef, useEffect } from 'react';
-import { handleSignOut } from '@/app/actions/auth';
-
+import { authClient } from '@/app/lib/auth-client';
+import { redirect } from 'next/navigation';
 export default function UserAvatar({ user }: { user: { name: string; email: string } | null }) {
     const [isOpen, setIsOpen] = useState(false);
     const menuRef = useRef<HTMLDivElement>(null);
@@ -37,7 +37,11 @@ export default function UserAvatar({ user }: { user: { name: string; email: stri
                         <div className="px-4 py-2 text-sm text-gray-700 border-b border-gray-100">
                             {user.name || user.email}
                         </div>
-                        <form action={handleSignOut}>
+                        <form onSubmit={async (event: React.FormEvent<HTMLFormElement>) => {
+                            event.preventDefault();
+                            await authClient.signOut();
+                            redirect("/login");
+                        }}>
                             <button
                                 type="submit"
                                 className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"

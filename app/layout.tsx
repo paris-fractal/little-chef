@@ -4,6 +4,7 @@ import "./globals.css";
 import RecipeListWrapper from "./components/RecipeListWrapper";
 import UserAvatar from "./components/UserAvatar";
 import { auth } from "./auth";
+import { headers } from 'next/headers';
 
 const playfair = Playfair_Display({ subsets: ["latin"] });
 
@@ -17,7 +18,9 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const session = await auth();
+  const session = await auth.api.getSession({
+    headers: await headers(),
+  });
   const user = session?.user ? {
     name: session.user.name || '',
     email: session.user.email || ''

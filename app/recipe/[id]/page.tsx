@@ -2,6 +2,7 @@ import { RecipeDisplay } from "../../components/RecipeDisplay";
 import { getRecipe } from "../../lib/db";
 import { notFound } from "next/navigation";
 import { auth } from "../../auth";
+import { headers } from 'next/headers';
 
 interface Props {
     params: {
@@ -10,7 +11,9 @@ interface Props {
 }
 
 export default async function RecipePage({ params }: Props) {
-    const session = await auth();
+    const session = await auth.api.getSession({
+        headers: await headers(),
+    });
     if (!session?.user?.id) {
         return <div>Please sign in to view recipes</div>;
     }

@@ -7,11 +7,13 @@ import type { Recipe } from './schema'
 import { createRecipe, deleteRecipe } from './lib/db';
 import { revalidatePath } from 'next/cache';
 import { auth } from './auth';
-import { authConfig } from './auth.config';
+import { headers } from 'next/headers';
 
 export async function handleRecipeRequest(text: string): Promise<{ success: boolean; recipe?: Recipe; error?: string }> {
     try {
-        const session = await auth();
+        const session = await auth.api.getSession({
+            headers: await headers(),
+        });
         if (!session?.user?.id) {
             return { success: false, error: 'Not authenticated' };
         }
@@ -42,7 +44,9 @@ export async function handleRecipeRequest(text: string): Promise<{ success: bool
 
 export async function handleDeleteRecipe(id: string): Promise<{ success: boolean; error?: string }> {
     try {
-        const session = await auth();
+        const session = await auth.api.getSession({
+            headers: await headers(),
+        });
         if (!session?.user?.id) {
             return { success: false, error: 'Not authenticated' };
         }

@@ -1,7 +1,11 @@
-import NextAuth from "next-auth"
-import { authConfig } from "./app/auth.config"
+import { NextResponse } from 'next/server'
+import type { NextRequest } from 'next/server'
 
-export const { auth: middleware } = NextAuth(authConfig)
+export function middleware(request: NextRequest) {
+    // For now, we'll let all requests through
+    // BetterAuth will handle authentication in the components
+    return NextResponse.next()
+}
 
 export const config = {
     // https://nextjs.org/docs/app/building-your-application/routing/middleware#matcher

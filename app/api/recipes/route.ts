@@ -2,13 +2,16 @@ import { NextResponse } from 'next/server';
 import { listRecipes, createRecipe } from '../../lib/db';
 import { v4 as uuidv4 } from 'uuid';
 import { auth } from '../../auth';
+import { headers } from 'next/headers';
 
 // Keep track of active SSE connections
 const clients = new Set<ReadableStreamDefaultController>();
 
 export async function GET() {
     try {
-        const session = await auth();
+        const session = await auth.api.getSession({
+            headers: await headers(),
+        });
         if (!session?.user?.id) {
             return NextResponse.json(
                 { error: 'Not authenticated' },

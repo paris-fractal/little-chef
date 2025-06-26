@@ -1,5 +1,7 @@
-import { signIn } from "@/app/auth"
+'use client'
 
+import { authClient } from "@/app/lib/auth-client"
+import { redirect } from "next/navigation"
 export default function LoginPage({
     searchParams,
 }: {
@@ -13,13 +15,24 @@ export default function LoginPage({
                         Sign in to your account
                     </h2>
                 </div>
-                <form className="mt-8 space-y-6" action={async (formData: FormData) => {
-                    "use server"
-                    await signIn("credentials", {
-                        email: formData.get("email"),
-                        password: formData.get("password"),
-                        redirectTo: searchParams.callbackUrl || "/"
-                    })
+                <form className="mt-8 space-y-6" onSubmit={async (event: React.FormEvent<HTMLFormElement>) => {
+                    event.preventDefault();
+                    const formData = new FormData(event.target as HTMLFormElement);
+                    const signup = formData.get("signup") as string;
+                    if (signup) {
+                        await authClient.signUp.email({
+                            email: formData.get("email") as string,
+                            password: formData.get("password") as string,
+                            name: formData.get("email") as string,
+                            callbackURL: "/"
+                        })
+                    } else {
+                        await authClient.signIn.email({
+                            email: formData.get("email") as string,
+                            password: formData.get("password") as string,
+                        })
+                    }
+                    redirect("/")
                 }}>
                     <div className="space-y-4">
                         <div>
@@ -50,6 +63,8 @@ export default function LoginPage({
                         </div>
                     </div>
                     <div>
+                        <input type="checkbox" name="signup" id="signup" />
+                        <label htmlFor="signup">Sign Up</label>
                         <button
                             type="submit"
                             className="group relative flex w-full justify-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
