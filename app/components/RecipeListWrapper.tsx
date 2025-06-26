@@ -1,19 +1,28 @@
-import { listRecipes } from '../lib/db';
-import RecipeList from './RecipeList';
-import type { Recipe } from '../schema';
-import { auth } from '../auth';
-import { headers } from 'next/headers';
+'use client';
 
-export default async function RecipeListWrapper() {
-    const session = await auth.api.getSession({
-        headers: await headers(),
-    });
-    console.log(session)
-    if (!session?.user?.id) {
-        return <div>Please sign in to view your recipes</div>;
+import RecipeList from './RecipeList';
+import { trpc } from '../lib/trpc/client';
+import { authClient } from '../lib/auth-client';
+
+export default function RecipeListWrapper() {
+    const session = authClient.useSession()
+    const { data, isLoading, error } = trpc.recipes.list.useQuery();
+
+    if (session.isPending) {
+        return <div className="p-4 text-center">Loading recipes...</div>;
     }
 
-    const recipes = await listRecipes(session.user.id);
+    if (error || session.error) {
+        return <div className="p-4 text-center text-red-600">Error loading recipes: {error?.message || session.error?.message}</div>;
+    }
 
-    return <RecipeList recipes={recipes} />;
+    if (!session.data?.user?.id) {
+        return <div className="p-4 text-center">Please sign in to view your recipes</div>;
+    }
+
+    if (isLoading) {
+        return <div className="p-4 text-center">Loading recipes...</div>;
+    }
+
+    return <RecipeList recipes={data!.recipes} />;
 } 

@@ -1,12 +1,25 @@
+'use client';
+
 import { useState } from "react"
 import type { Recipe } from "../schema"
-import { handleRecipeRequest } from "../actions"
 import { useRouter } from "next/navigation"
+import { trpc } from "../lib/trpc/client"
 
 export function RecipeForm() {
     const [loading, setLoading] = useState(false)
     const [error, setError] = useState<string | null>(null)
     const router = useRouter()
+
+    const generateRecipeMutation = trpc.recipes.generate.useMutation({
+        onSuccess: (result) => {
+            if (result.success && result.recipe) {
+                router.push(`/recipe/${result.recipe.id}`)
+            }
+        },
+        onError: (error) => {
+            setError(error.message || 'Failed to generate recipe')
+        },
+    })
 
     async function onSubmit(event: React.FormEvent<HTMLFormElement>) {
         event.preventDefault()
@@ -17,13 +30,7 @@ export function RecipeForm() {
         const text = formData.get('recipe-request') as string
 
         try {
-            const result = await handleRecipeRequest(text)
-
-            if (result.success && result.recipe) {
-                router.push(`/recipe/${result.recipe.id}`)
-            } else {
-                setError(result.error || 'An unexpected error occurred')
-            }
+            generateRecipeMutation.mutate({ text })
         } catch (err) {
             setError('Failed to generate recipe')
         } finally {
@@ -47,16 +54,16 @@ export function RecipeForm() {
                     />
                     <button
                         type="submit"
-                        disabled={loading}
+                        disabled={loading || generateRecipeMutation.isPending}
                         className="px-6 py-3 bg-[#a8c4d9] text-[#2c3e50] rounded-lg hover:bg-[#8ab3d0] disabled:opacity-50 transition-colors font-medium"
                     >
-                        {loading ? "Generating..." : "Generate Recipe"}
+                        {loading || generateRecipeMutation.isPending ? "Generating..." : "Generate Recipe"}
                     </button>
                 </div>
             </form>
-            {error && (
+            {(error || generateRecipeMutation.error) && (
                 <div className="p-4 bg-red-50 text-red-700 rounded-lg mb-8 border border-red-200">
-                    {error}
+                    {error || generateRecipeMutation.error?.message}
                 </div>
             )}
         </>
