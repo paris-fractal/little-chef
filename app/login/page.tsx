@@ -1,12 +1,10 @@
 'use client'
 
 import { authClient } from "@/app/lib/auth-client"
-import { redirect } from "next/navigation"
-export default function LoginPage({
-    searchParams,
-}: {
-    searchParams: { callbackUrl?: string }
-}) {
+import { redirect, useSearchParams } from "next/navigation"
+export default function LoginPage() {
+    const searchParams = useSearchParams()
+    const callbackUrl = searchParams.get("callbackUrl")
     return (
         <div className="flex min-h-screen flex-col items-center justify-center py-2">
             <div className="w-full max-w-md space-y-8">
@@ -24,12 +22,13 @@ export default function LoginPage({
                             email: formData.get("email") as string,
                             password: formData.get("password") as string,
                             name: formData.get("email") as string,
-                            callbackURL: "/"
+                            callbackURL: callbackUrl || "/"
                         })
                     } else {
                         await authClient.signIn.email({
                             email: formData.get("email") as string,
                             password: formData.get("password") as string,
+                            callbackURL: callbackUrl || "/"
                         })
                     }
                     redirect("/")
